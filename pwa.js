@@ -49,7 +49,7 @@ window.addEventListener("load", async () => {
 
         stav.textContent = registrace.waiting
             ? "Aktualizace čeká na zavření všech oken aplikace."
-            : "Offline soubory jsou p\u0159ipraven\u00e9. Verze 3.";
+            : "Offline soubory jsou p\u0159ipraven\u00e9. Verze 10.";
     } catch (error) {
         console.error("Chyba offline režimu:", error);
 

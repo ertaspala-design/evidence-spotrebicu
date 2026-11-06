@@ -36,7 +36,8 @@
 
                 <label for="nazev">Název spotřebiče</label>
                 <input type="text" id="nazev" required
-                       placeholder="Např. Lednice">
+                       placeholder="Např. Lednice" autocomplete="off" aria-controls="navrhyNazvu">
+<div id="navrhyNazvu" class="navrhy" role="group" aria-label="Návrhy názvů spotřebičů" hidden></div>
 
                 <label for="umisteni">Umístění</label>
 <input type="text" id="umisteni" required placeholder="Např. Kancelář 12">
@@ -53,6 +54,22 @@
 
         <section class="panel">
             <h2>Seznam spotřebičů</h2>
+<div class="filtry">
+    <div class="hledani"><label for="hledat">Hledat číslo nebo název</label>
+    <input type="search" id="hledat" placeholder="Např. 26/1 nebo monitor" autocomplete="off"></div>
+    <div><label for="filtrUmisteni">Umístění</label>
+    <select id="filtrUmisteni"><option value="">Všechna umístění</option></select></div>
+    <div><label for="filtrTridy">Třída</label>
+    <select id="filtrTridy">
+        <option value="">Všechny třídy</option>
+        <option value="1">tř. 1</option>
+        <option value="2">tř. 2</option>
+        <option value="nevyplneno">Nevyplněno</option>
+    </select></div>
+</div>
+<button type="button" id="zrusitFiltry" class="sekundarni">Zrušit hledání a filtry</button>
+<p id="pocetZaznamu" role="status" aria-live="polite"></p>
+<p id="stavUlozeni" role="status" aria-live="polite"></p>
 
             <div class="table-scroll">
                 <table>

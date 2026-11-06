@@ -7,6 +7,66 @@ let ukladaSe = false;
 
 const formular = document.getElementById("formular");
 const seznam = document.getElementById("seznam");
+const hledat = document.getElementById("hledat");
+const filtrUmisteni = document.getElementById("filtrUmisteni");
+const filtrTridy = document.getElementById("filtrTridy");
+const poleNazvu = document.getElementById("nazev");
+const navrhyNazvu = document.getElementById("navrhyNazvu");
+let nazvySpotrebicu = [];
+
+function normalizovatText(text) {
+    return String(text ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("cs").trim();
+}
+
+function navrhnoutNazvy() {
+    const dotaz = normalizovatText(poleNazvu.value);
+    navrhyNazvu.replaceChildren();
+    if (!dotaz || ukladaSe) {
+        navrhyNazvu.hidden = true;
+        return;
+    }
+    const navrhy = nazvySpotrebicu
+        .filter(nazev => normalizovatText(nazev).includes(dotaz))
+        .slice(0, 8);
+    for (const nazev of navrhy) {
+        const tlacitko = document.createElement("button");
+        tlacitko.type = "button";
+        tlacitko.textContent = nazev;
+        tlacitko.addEventListener("click", () => {
+            poleNazvu.value = nazev;
+            poleNazvu.focus();
+            navrhyNazvu.hidden = true;
+        });
+        navrhyNazvu.appendChild(tlacitko);
+    }
+    navrhyNazvu.hidden = navrhy.length === 0;
+}
+
+poleNazvu.addEventListener("input", navrhnoutNazvy);
+poleNazvu.addEventListener("focus", navrhnoutNazvy);
+poleNazvu.addEventListener("keydown", event => {
+    if (event.key === "Escape") navrhyNazvu.hidden = true;
+});
+document.addEventListener("focusin", event => {
+    if (event.target !== poleNazvu && !navrhyNazvu.contains(event.target)) {
+        navrhyNazvu.hidden = true;
+    }
+});
+document.addEventListener("pointerdown", event => {
+    if (event.target !== poleNazvu && !navrhyNazvu.contains(event.target)) {
+        navrhyNazvu.hidden = true;
+    }
+});
+hledat.addEventListener("input", () => { if (pripraveno) vykreslitTabulku(); });
+filtrUmisteni.addEventListener("change", () => { if (pripraveno) vykreslitTabulku(); });
+filtrTridy.addEventListener("change", () => { if (pripraveno) vykreslitTabulku(); });
+document.getElementById("zrusitFiltry").addEventListener("click", () => {
+    hledat.value = "";
+    filtrUmisteni.value = "";
+    filtrTridy.value = "";
+    if (pripraveno) vykreslitTabulku();
+});
+
 
 const vyberTridy = document.getElementById("trida");
 
@@ -105,6 +165,7 @@ formular.addEventListener("submit", async event => {
         alert("Vyplň všechna pole a vyber třídu 1 nebo 2.");
         return;
     }
+    const pridavani = upravovaneId === null;
     try {
         await provedZmenu(() => {
             if (upravovaneId === null) {
@@ -117,6 +178,14 @@ formular.addEventListener("submit", async event => {
         });
         zrusitUpravu();
         vykreslitTabulku();
+        const viditelny = [...seznam.children].some(radek =>
+            radek.dataset.cislo === cislo);
+        document.getElementById("stavUlozeni").textContent =
+            (pridavani ? "Spotřebič přidán." : "Změny uloženy.") +
+            (viditelny ? "" : " Záznam je skrytý aktuálním filtrem.");
+        if (pridavani) {
+            document.getElementById("cislo").focus({preventScroll: true});
+        }
     } catch (error) {
         alert("Chyba při ukládání: " + error.message);
     }
@@ -125,10 +194,37 @@ formular.addEventListener("submit", async event => {
 // SELECT – načtení spotřebičů
 
 function vykreslitTabulku() {
-    const vysledek = db.exec("SELECT id, evidencni_cislo, nazev, umisteni, trida FROM spotrebice ORDER BY id DESC;");
+    const vysledek = db.exec("SELECT id, evidencni_cislo, nazev, umisteni, trida FROM spotrebice ORDER BY id ASC;");
+    const vsechny = vysledek[0]?.values || [];
+    nazvySpotrebicu = [...new Set(vsechny.map(radek => radek[2]))]
+        .sort((a, b) => a.localeCompare(b, "cs"));
+    const vybraneUmisteni = filtrUmisteni.value;
+    const umisteniSeznam = [...new Set(vsechny.map(radek => radek[3]).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "cs"));
+    // Zachováme i filtr, jehož poslední záznam byl právě smazán nebo upraven.
+    if (vybraneUmisteni && !umisteniSeznam.includes(vybraneUmisteni)) {
+        umisteniSeznam.push(vybraneUmisteni);
+    }
+    filtrUmisteni.replaceChildren(new Option("Všechna umístění", ""));
+    for (const hodnota of umisteniSeznam) {
+        filtrUmisteni.add(new Option(hodnota, hodnota));
+    }
+    filtrUmisteni.value = vybraneUmisteni;
+    const dotaz = normalizovatText(hledat.value);
+    const zobrazene = vsechny.filter(([, cislo, nazev, umisteni, trida]) => {
+        const shodaTextu = !dotaz || normalizovatText(cislo).includes(dotaz) ||
+            normalizovatText(nazev).includes(dotaz);
+        const shodaUmisteni = !filtrUmisteni.value || umisteni === filtrUmisteni.value;
+        const shodaTridy = !filtrTridy.value ||
+            (filtrTridy.value === "nevyplneno" ? !trida : trida === filtrTridy.value);
+        return shodaTextu && shodaUmisteni && shodaTridy;
+    });
+    document.getElementById("pocetZaznamu").textContent =
+        "Zobrazeno " + zobrazene.length + " z " + vsechny.length + " spotřebičů.";
     seznam.replaceChildren();
-    for (const [id, cislo, nazev, umisteni, trida] of vysledek[0]?.values || []) {
+    for (const [id, cislo, nazev, umisteni, trida] of zobrazene) {
         const radek = document.createElement("tr");
+        radek.dataset.cislo = cislo;
         for (const text of [cislo, nazev, umisteni || "—", trida ? "tř. " + trida : "Nevyplněno"]) {
             const td = document.createElement("td");
             td.textContent = text;
@@ -147,6 +243,14 @@ function vykreslitTabulku() {
         smazat.addEventListener("click", () => smazatSpotrebic(id, nazev));
         akce.append(upravit, smazat);
         radek.appendChild(akce);
+        seznam.appendChild(radek);
+    }
+    if (zobrazene.length === 0) {
+        const radek = document.createElement("tr");
+        const bunka = document.createElement("td");
+        bunka.colSpan = 5;
+        bunka.textContent = vsechny.length ? "Žádný spotřebič neodpovídá hledání a filtrům." : "Zatím nejsou uložené žádné spotřebiče.";
+        radek.appendChild(bunka);
         seznam.appendChild(radek);
     }
 }
@@ -282,6 +386,7 @@ function zrusitUpravu() {
 
     upravovaneId = null;
     formular.reset();
+    navrhyNazvu.hidden = true;
 
     document.getElementById("umisteni").value = umisteni;
     document.getElementById("trida").value = trida;

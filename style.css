@@ -101,3 +101,14 @@ table { min-width: 580px; }
 .app { max-width: 850px; }
 button { min-height: 44px; }
 [hidden] { display: none !important; }
+
+/* Vyhledávání, filtry a názvy spotřebičů */
+.filtry { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+.filtry > div { min-width: 0; }
+.sekundarni { background: #e2e8f0; color: #1e293b; margin-top: 12px; }
+.navrhy { border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; max-height: 260px; overflow-y: auto; }
+.navrhy button { display: block; margin: 0; border-radius: 0; background: white; color: #1e293b; text-align: left; padding: 12px; min-height: 44px; border-bottom: 1px solid #e2e8f0; }
+.navrhy button:hover, .navrhy button:focus-visible { background: #eff6ff; }
+#pocetZaznamu { color: #475569; }
+#stavUlozeni:empty { display: none; }
+@media (max-width: 600px) { .filtry { grid-template-columns: 1fr 1fr; } .filtry .hledani { grid-column: 1 / -1; } }

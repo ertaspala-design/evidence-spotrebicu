@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "evidence-spotrebicu-";
-const CACHE_NAME = CACHE_PREFIX + "v9-zaloha";
+const CACHE_NAME = CACHE_PREFIX + "v10-vyhledavani";
 
 const SOUBORY = [
     "./index.html",

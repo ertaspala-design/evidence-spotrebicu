@@ -1,0 +1,99 @@
+﻿
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#2563eb">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Spotřebiče">
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="./icons/apple-touch-icon.png">
+
+    <title>Evidence spotřebičů</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app">
+        <h1>Evidence spotřebičů</h1>
+        <p id="offlineStav" role="status">
+            Připravuji offline režim…
+        </p>
+
+        <section class="panel">
+            <h2 id="nadpisFormulare">Přidat spotřebič</h2>
+
+            <form id="formular">
+                <label for="cislo">Evidenční číslo</label>
+                <input type="text" id="cislo" required
+                       placeholder="Např. EL-001">
+
+                <label for="nazev">Název spotřebiče</label>
+                <input type="text" id="nazev" required
+                       placeholder="Např. Lednice">
+
+                <label for="umisteni">Umístění</label>
+<input type="text" id="umisteni" required placeholder="Např. Kancelář 12">
+<label for="trida">Třída spotřebiče</label>
+<select id="trida" required>
+    <option value="" disabled selected>Vyber třídu</option>
+    <option value="1">tř. 1</option>
+    <option value="2">tř. 2</option>
+</select>
+<button type="submit" id="ulozitSpotrebic">+ Přidat spotřebič</button>
+<button type="button" id="zrusitUpravu" hidden>Zrušit úpravu</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Seznam spotřebičů</h2>
+
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Evidenční číslo</th>
+                            <th>Název</th>
+                            <th>Umístění</th>
+                            <th>Třída</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seznam"></tbody>
+                </table>
+            </div>
+
+            <button type="button" onclick="exportExcel()">
+                Exportovat do Excelu (.xlsx)
+            </button>
+
+            <button type="button" onclick="exportDatabaze()">
+                Zálohovat databázi (.sqlite)
+            </button>
+
+            <label for="souborZalohy">Obnovit databázi ze zálohy</label>
+            <input type="file"
+                   id="souborZalohy"
+                   accept=".sqlite,.sqlite3,.db">
+
+            <p>
+                Obnova nahradí všechny současné záznamy.
+                Před obnovou si je zazálohuj.
+            </p>
+
+        </section>
+    </main>
+
+    <script src="vendor/sql-wasm.js"></script>
+    <script src="vendor/exceljs.min.js"></script>
+    <script src="app.js"></script>
+    <script src="pwa.js"></script>
+
+</body>
+</html>

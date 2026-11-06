@@ -1,0 +1,103 @@
+﻿
+body {
+    margin: 0;
+    background: #f2f5f9;
+    font-family: Arial, sans-serif;
+    color: #1e293b;
+}
+
+.app {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 26px;
+}
+
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+}
+
+input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: 12px 5px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+
+/* Tlačítka v tabulce */
+.btn-upravit,
+.btn-smazat {
+    width: auto;
+    margin: 3px;
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-upravit {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-smazat {
+    background: #dc2626;
+    color: white;
+}
+
+/* Přizpůsobení mobilu */
+@media (max-width: 500px) {
+    th, td {
+        padding: 8px 4px;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+}
+
+
+select { box-sizing: border-box; width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; font-size: 16px; background: white; color: #1e293b; min-height: 44px; }
+.table-scroll { max-width: 100%; overflow-x: auto; }
+table { min-width: 580px; }
+.app { max-width: 850px; }
+button { min-height: 44px; }
+[hidden] { display: none !important; }
